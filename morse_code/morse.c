@@ -65,10 +65,13 @@ int main(void)
     printf(">>Start\n");
     while(readSize > 0)
     {
-        while(i < readSize+1)
+        // printf("readSize:%ld\n", readSize);
+        while(i < readSize)
         {
             // scanf("%c", &c);
             c = EncodeBuffer[i];
+            // printf("%c\n", c);
+            wordOffset++;
             if(c == '1')
             {
                 if(state == idle)
@@ -107,6 +110,7 @@ int main(void)
                     //print char
                     // printf("%d", char_morse);
                     uint8_t tmp = morse_to_alphabet(char_morse, morse_map, bit_count);
+                    
                     printf("%c", tmp);
                     bit_count = 0;
                 }
@@ -133,6 +137,7 @@ int main(void)
                     state = state_1_1;
                     //print space
                     uint8_t tmp = morse_to_alphabet(char_morse, morse_map, bit_count);
+                    
                     printf("%c", tmp);
                     printf(" ");
                     char_morse = 0;
@@ -174,10 +179,12 @@ int main(void)
                 }
                 else if(state == state_2_0)
                 {
+                    wordOffset = 0;
                     state = state_3_0;
                 }
                 else if(state == state_3_0)
                 {
+                    
                     state = state_4_0;
                 }
                 else if(state == state_4_0)
@@ -190,14 +197,18 @@ int main(void)
                 }
                 else if(state == state_6_0)
                 {
+                    wordOffset = 0;
+                    
                     state = state_7_0;
                 }
                 else if(state == state_7_0)
                 {
                     state = state_1_0;
                     //write space
+                    
                     uint8_t tmp = morse_to_alphabet(char_morse, morse_map, bit_count);
                     printf("%c", tmp);
+                    
                     printf(" ");
                     char_morse = 0;
                     bit_count = 0;
@@ -211,19 +222,29 @@ int main(void)
                 //do nothing
                 if(c == '\n')
                 {
-                    state = idle;
-                    
+                    state = idle;          
                     uint8_t tmp = morse_to_alphabet(char_morse, morse_map, bit_count);
                     char_morse = 0; bit_count = 0;
+                    wordOffset = 0;
                     printf("%c\n", tmp);
                     // printf("\n");
                     // return 0;
                 }
+                // printf("warn: %c\n", c);
             }
             i++;  
         }
-        if(bit_count > 0)
-            lseek(fd, -bit_count, SEEK_CUR);
+        // printf("\nbit=%d\n",bit_count);
+        // printf("offset=%d\n", wordOffset);
+        if(wordOffset > 0)
+            lseek(fd, -wordOffset, SEEK_CUR);
+        else{
+            uint8_t tmp = morse_to_alphabet(char_morse, morse_map, bit_count);
+            printf("%c", tmp);
+            if(state == state_7_0)
+                printf(" ");
+        }
+        wordOffset = 0;
         bit_count = 0;
         state = idle;
         char_morse = 0;
@@ -253,7 +274,7 @@ int morse_encode_read(uint8_t* buf)
     close(fd);
     return 0;
 }
-int morse_map_print(struct node_struct*map)
+int morse_map_print(struct node_struct *map)
 {
     if(map == NULL)
     {
