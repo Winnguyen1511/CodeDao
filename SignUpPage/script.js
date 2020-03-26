@@ -162,8 +162,8 @@ function InforHandler()
     //end with an domain name such as @gmail.com or dut.edu.vn
     //This is not check the invalid domain name that have more than
     //3 dot in the domain, which is only can be ipv6
-    const emailRegex = /^[A-Za-z][\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    const emailRegex_check_ipv6 = /(\d{3}\.){5}(\d{3})$/;
+    const emailRegex = /^[A-Za-z][\w-\.]+@([\w-]+\.)+[\w-]{1,4}$/;
+    const emailRegex_check_ipv6 = /(\d{1,4}\.){5}(\d{1,4})$/;
     //plit the after @ part
     const passRegex = /^[\w@*\s]{6,}/;
     let ipv6_extention = false;
