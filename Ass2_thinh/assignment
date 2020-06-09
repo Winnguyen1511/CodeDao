@@ -1,0 +1,119 @@
+- mode: 0 - Normal
+- petal: 0->99
+
+-HP: 1->999 also the max HP
+-level: 1->10
+-antidote: 0->99
+- gil: 1->999
+
+-Events: the 3rd line: maximum 100 events
+	+ Events in different castle are separated by 0.
+	+ Each castle has max 20 events.
+	+ Can be displayed in multiple lines. 
+	+ In each castle, events will be indexed start from 1.
+	when pass to new castle, the indexes will be reset to 1.
+
+- every time the night went through an event, a petal would fall down.
+- If petal == 0, and the knight has not yet won, terminate walkthrough() and return NULL.
+
+
+a) If the knight meets Ultimecia and has Excalibur sword:
+	-> Win, walthrough() terminate return *report.
+- Without Excalibur sword -> Lose. HP = HP / 3(rounded s int), if HP < 3 -> reduceed to 1.
+
+b) If meet Excalubur, without 3 treasures -> Cannot draw sword, continue to next event. If have all 3 -> draw sword, continue events.
+
+c) When passing through 1 castle (each pass 0) increase level by 1. But not greater than 10.
+If passed through all castle, the knight will return to the beginning.
+
+Every time level is increase, maxHP += 100, but cannot > 999.
+
+d) Opponent: event 1->5
+	has levelO
+i: ith event
+	Formular:
+		b = i%10;
+		levelO = i > 6 (b>5? b : 5) : b;
+
+-> Max levelO is 5.
+-> If level of knight >= levelO -> win, obtain gil, 
+
+-> If level < levelO, HP = HP - damage;
+			damage = baseDamage*levelO*10;
+
+If HP is <= 0, call callPhoenix() to revive the knight (mean that the knight is dead and has to revive :v).
+	callPhoenix(): -100gil
+			if gil < 100(even if gil == 0), gil = 0.
+			when revived, HP = 1/2 MAX HP.(rounded)
+e) Tombery:
+	level formular the same
+	-> Win: +1 level
+	-> Lose: poisoned by next 5 level.
+If poisoned, lose HP as losing even winning. (when facing opponents and Ultimecia).
+
+	If antidote >= 1, use medicine, back to normal
+	antidote == 0, if HP drop to 0 or lower(dead), summon callPhoenix(). Back to normal.
+
+f) Queen of Cards (7):
+if win, double gil.
+lose, reduce half gil
+
+g) meet Nina de Ring(8):
+	Trading:
+- No trading if gil < 50 gil
+- if poisoned, pay 50 gil to de-poison
+- If has more gil after depoisoned, convert gil -> HP (1:1 ratio)
+until out of money or HP reaches MaxHp.
+
+h) Lost into Durian Garden (9):
+-> De-poisoned
+-> recover maxHP
+-> petal += 5
+
+i) Pickup antidote(10): antidote +=1, if poisoned, use immediately.
+
+k) Meet Odin(11):
+Odin accompany the knight in the next 5 events. Defeat all opponents with event codes from 1->7 regardless levelO.
+
+l) Meet Merlin(12):
+-> Depoison
+-> level += 1 (Also MaxHP)
+-> Restore HP to Max HP.
+
+m) Meet Omega Weapon:
+Lose, HP-> 0, has to callPhoenix()
+
+- Except level == 10 and has Excalibur or Dragon Knight at any level with Lion Heart can defeat Omega Weapon.
+- If defeat Omega, increase level -> 10. gil -> 999. 
+Omega wil never reappear( just ignore the code 13 if meet again).
+
+n) Meet Hades(14):
+-> If lose, HP->0(dead), need revise. 
+-> If win, obtain mythril armor. Never reduce HP, even if defeated by Hades, Omega, Ultimecia.
+ But can be poisoned by Tornbery.
+
+If Odin is helping the knight, Odin will be killed, from now on, when enter code 11, the knight will ignore.
+
+o)Scarlet Hakama (15):
+-> Not lose gil if lose Queen of Cards.
+-> Not charge gil for depoisoning with Nina. and exchanging HP.
+-> Enter the Durian Garden, petals will increase to 99.
+
+p) LockedDoor(16):
+-> If meet LockedDoor at ith event, if level > i% 10, pass
+	else leave the castle(leave all events in that castle), level and MaxHP is still remain the same.
+
+q) if init HP == 999, knight -> King Arthur. Arthur can draw Excalibur at any time, defeat all 1->7 opponents. No limited by the petal, even if petal == 0, Arthur still continues the journey until victory.
+
+r) if init HP == 888, knight -> Lancelot. Already has spear by default(code 96), defeats all opponents with codes 1-> 7, pass all chalenges at any level.
+
+s) init HP == 777, Princess Guinevere. Has already hair (code 97). 
+If defeated by Queen of Cards, no reduce gil.
+Nina will not collect money, giving addition 50 gil.
+
+t) init HP == prime number -> Paladin, has shield (code 95). Defeat 1->5 opponents. No poisoned by Tornbery. 
+
+u) Dragon Night:
+
+v) if init mode == 1. Hard mode, pick treasure in order Hash function.
+
